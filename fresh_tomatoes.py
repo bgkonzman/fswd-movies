@@ -1,8 +1,8 @@
+'''The fresh_tomatoes module contains the code for outputting and opening
+the HTML for the webpage'''
 import webbrowser
 import os
 import re
-import media
-
 
 # Styles and scripting for the page
 main_page_head = '''
@@ -141,7 +141,7 @@ tile_content = '''
 '''
 
 def create_tiles_content(features):
-    # The HTML content for this section of the page
+    '''Fill in the page with HTML for the featured content tiles'''
     content = ''
     for feature in features:
         # Extract the youtube ID from the url
@@ -154,29 +154,22 @@ def create_tiles_content(features):
 
         # Append the tile for the feature with its content filled in
         content += tile_content.format(
-            title = feature.title,
-            poster_image_url = feature.poster_image_url,
-            trailer_youtube_id = trailer_youtube_id,
-            type_specific_content = (
-                # Fill content according to whether the feature
-                # is a movie or TV show
-                feature.release_year if isinstance(feature, media.Movie)
-                else str(feature.number_of_seasons) + " Season" + (
-                    # Output plural as appropriate
-                    "s" if feature.number_of_seasons > 1 else ""
-                )
-            )
+            title=feature.title,
+            poster_image_url=feature.poster_image_url,
+            trailer_youtube_id=trailer_youtube_id,
+            type_specific_content=feature.output_specific_content()
         )
     return content
 
 def open_page(movies, shows):
+    '''Creates and opens the page'''
     # Create or overwrite the output file
     output_file = open('fresh_tomatoes.html', 'w')
 
     # Replace the feature tiles' placeholder with generated content
     rendered_content = main_page_content.format(
-        movie_tiles = create_tiles_content(movies),
-        tv_tiles = create_tiles_content(shows))
+        movie_tiles=create_tiles_content(movies),
+        tv_tiles=create_tiles_content(shows))
 
     # Output the file
     output_file.write(main_page_head + rendered_content)
